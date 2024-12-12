@@ -18,7 +18,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "To-do list",
-  description: "A simple to-do list app built with Next.js",
+  // description: "A simple to-do list app built with Next.js",
 };
 
 export default function RootLayout({
@@ -27,13 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
+      <head />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-background text-primary `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-background text-primary`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >

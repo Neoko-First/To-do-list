@@ -1,5 +1,4 @@
 "use client";
-import { addTodo, deleteTodo, fetchTodos, toggleTodo } from "@/lib/api/todo";
 import React, { useEffect, useState } from "react";
 import TodoForm from "../components/TodoForm";
 import TodoList from "../components/TodoList";
@@ -14,54 +13,50 @@ const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Charger les tâches depuis le localStorage
+  // Charger les tâches depuis localStorage
   useEffect(() => {
-    const loadTodos = async () => {
+    const loadTodos = () => {
       setLoading(true);
-      try {
-        const todos = await fetchTodos();
-        setTodos(todos);
-      } catch (error) {
-        console.error("Erreur lors du chargement des todos", error);
-      } finally {
-        setLoading(false);
+      const storedTodos = localStorage.getItem("todos");
+      if (storedTodos) {
+        setTodos(JSON.parse(storedTodos)); // Charger les todos depuis localStorage
       }
+      setLoading(false);
     };
 
     loadTodos();
   }, []);
 
-  const handleAddTodo = async (task: string) => {
-    try {
-      const newTodo = await addTodo(task);
-      setTodos((prevTodos) => [...prevTodos, newTodo]);
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de la tâche", error);
+  // Sauvegarder les todos dans localStorage à chaque mise à jour
+  useEffect(() => {
+    if (todos.length > 0) {
+      localStorage.setItem("todos", JSON.stringify(todos)); // Sauvegarder dans localStorage
     }
+  }, [todos]);
+
+  const handleAddTodo = (task: string) => {
+    const newTodo: Todo = {
+      id: Date.now(),
+      task,
+      completed: false,
+    };
+
+    // Mettre à jour les todos et sauvegarder dans localStorage
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
 
-  const handleToggleTodo = async (id: number) => {
-    try {
-      await toggleTodo(id);
-    } catch (error) {
-      console.error("Erreur lors du changement de statut de la tâche", error);
-    } finally {
-      setTodos((prevTodos) =>
-        prevTodos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        )
-      );
-    }
+  const handleToggleTodo = (id: number) => {
+    // Mettre à jour l'état de la tâche (complétée ou non) et sauvegarder dans localStorage
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
-  const handleDeleteTodo = async (id: number) => {
-    try {
-      await deleteTodo(id);
-    } catch (error) {
-      console.error("Erreur lors de la suppression de la tâche", error);
-    } finally {
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
-    }
+  const handleDeleteTodo = (id: number) => {
+    // Supprimer la tâche et sauvegarder dans localStorage
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
   return (
