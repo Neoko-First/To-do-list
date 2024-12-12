@@ -67,6 +67,7 @@ const Home: React.FC = () => {
       ) : (
         <TodoList
           todos={todos}
+          setTodos={setTodos}
           onToggle={handleToggleTodo}
           onDelete={handleDeleteTodo}
         />
